@@ -214,7 +214,10 @@ function delta = diferencia(v1,v2)
 
     dif = v1 - v2;    
     dif_temp = nonzeros(dif);
-    delta = transpose(dif_temp);   
+    
+    save("jsjjs","dif_temp");
+    delta = transpose(dif_temp) ;
+    
 
 end
 
