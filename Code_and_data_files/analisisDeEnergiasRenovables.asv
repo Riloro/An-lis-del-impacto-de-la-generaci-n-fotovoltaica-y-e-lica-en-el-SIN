@@ -14,11 +14,9 @@ set(0,'defaultTextInterpreter','latex');
 load("Data001Abril14Azul.mat")
 load("Data001Abril14Verde.mat")
 load("Data002Abril14Amarillo.mat")
-
 load("Data001Mayo17Amarillo.mat")
 load("Data001Mayo17Azul.mat")
-load("Data001Mayo17Verde.mat")
-
+load("")
 day = input("1. '14 de Abril', 2. '13 de Mayo', 3. '17 de Mayo'  (Selecciona el dia ingresando el numero de opcion) :    ");
 
 
@@ -45,27 +43,24 @@ switch (day)
         x_green = transpose(green_data(:,1));
         y_green = transpose(green_data(:,2));
         
+       
+
+        
         yellow_data = xlsread("Data002Amarillo13mayoExcel.xlsx");
         x_yellow = transpose(yellow_data(:,1));
         y_yellow = transpose(yellow_data(:,2));
         
+       
+        
+        
+
         blue_data132 = xlsread("Data003Azul13mayoExcel.xlsx");
         x_blue = transpose(blue_data132(:,1));
         y_blue = transpose(blue_data132(:,2));
     
     case 3
     %Datos del 17 de Mayo2
-        green_data = Data001Mayo17Verde;
-        x_green = transpose(green_data(:,1));
-        y_green = transpose(green_data(:,2));
-        
-        yellow_data = Data001Mayo17Amarillo;
-        x_yellow = transpose(yellow_data(:,1));
-        y_yellow = transpose(yellow_data(:,2));
-        
-        blue_data13 = Data001Mayo17Azul;
-        x_blue = transpose(blue_data13(:,1));
-        y_blue = transpose(blue_data13(:,2));
+        disp("Por ahora no hay datos :(")
     otherwise
         disp("Dia no elegido :(")
 
@@ -148,8 +143,8 @@ switch (day)
         index_0 = find( newXM == 448);
         index_f = find( newXM == 1244);
     case 3
-        index_0 = find( newXM == 438);
-        index_f = find( newXM == 1261);        
+        
+        
     otherwise
         disp(":(")
 
