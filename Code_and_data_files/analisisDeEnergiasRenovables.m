@@ -139,21 +139,60 @@ showInterpol(newXH,y_YIntH,y_GIntH,y_BIntH,26,"CURVA PATO MIERCOLES 13 DE MAYO D
 % end
 % disp('Inferior Limit:'+num2str(lim_inf_ind))
 % disp('Superior Limit:'+num2str(lim_sup_ind))
+% 
+% switch (day)
+%     case 1
+%         index_0 = find(newXM == 456);
+%         index_f = find(newXM == 1239);
+%     case 2
+%         index_0 = find( newXM == 448);
+%         index_f = find( newXM == 1244);
+%     case 3
+%         index_0 = find( newXM == 438);
+%         index_f = find( newXM == 1261);        
+%     otherwise
+%         disp(":(")
+% 
+% end
+%Calculo de límites G-Y
+dif = 1;
+factor_dif=10;
+step_compare = 10;
+for ii = length(y_GInt)/2:-1:0
+    if (y_YInt(ii)-y_GInt(ii)) > dif*factor_dif && (y_YInt(ii-step_compare)-y_GInt(ii-step_compare)) < dif
+      lim_inf_ind = ii-step_compare;
+        break
+    end
+
+end
+for ii = length(y_GInt)/2:1:length(y_GInt)-step_compare
+    if (y_YInt(ii)-y_GInt(ii)) > dif*factor_dif && (y_YInt(ii+step_compare)-y_GInt(ii+step_compare)) < dif
+      lim_sup_ind = ii+step_compare;
+        break
+    end
+    disp(ii)
+end
+
+disp('Inferior limit:')
+disp(lim_inf_ind)
+disp('Superior Limit:')
+disp(lim_sup_ind)
 
 switch (day)
     case 1
-        index_0 = find(newXM == 456);
-        index_f = find(newXM == 1239);
+        index_0 = lim_inf_ind;
+        index_f = lim_sup_ind;
     case 2
-        index_0 = find( newXM == 448);
-        index_f = find( newXM == 1244);
+        index_0 = lim_inf_ind;
+        index_f = lim_sup_ind;
     case 3
-        index_0 = find( newXM == 438);
-        index_f = find( newXM == 1261);        
+        index_0 = lim_inf_ind;
+        index_f = lim_sup_ind;        
     otherwise
         disp(":(")
 
 end
+
 
 y_YInt(1:index_0) = y_GInt(1:index_0);
 y_YInt(index_f:end) = y_GInt(index_f:end);
