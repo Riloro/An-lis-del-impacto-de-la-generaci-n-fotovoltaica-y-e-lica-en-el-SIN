@@ -280,8 +280,6 @@ grid on
 
 dif_min_FV_eo = diferencia(y_YInt,y_GInt); % Diferencias minutales entre la curva de generacion solar y la fotovoltaica
 dif_hor_FV_eo = diferencia(y_YIntH,y_GIntH); % Diferencias horarias 
-dif_min_eo_ter = diferencia(y_GInt,y_BInt); 
-dif_hor_eo_ter = diferencia(y_GIntH,y_BIntH);
 
 %---------------------------------Mostrasndo histogramas--------------------------
 showHist(dif_min_FV_eo,5,"Diferencias minutales FV-EO "+ dia); % -> 6 log
@@ -293,8 +291,6 @@ showHist(y_BInt,11,"GenConv1 Minutal "+ dia); %12
 showHist(y_YIntH,13,"GenConv0 Horario "+ dia); %14
 showHist(y_BIntH,15,"GenConv1 Horario "+ dia); %16
 
-showHist(dif_min_eo_ter,17,"Diferencias minutales EO-Ter "+ dia); % -> 18 log
-showHist(dif_hor_eo_ter,19,"Diferencias horarias EO-Ter "+ dia);  % -> 20 log
 
 %--------------------------------Factor de planta-----------------------
 % Generacion Solar 13 de mayo 2020
@@ -367,9 +363,7 @@ end
 function showHist(diferencias,num,tit)
 
     promedio = mean(diferencias);
-    sigma = std(diferencias);
     disp("Promedio :"+promedio);
-    disp("sigma = "+sigma);
     N_FV = length(diferencias);
     c = ceil(1 + log2(N_FV));
     disp("Numero de clases = "+c);
