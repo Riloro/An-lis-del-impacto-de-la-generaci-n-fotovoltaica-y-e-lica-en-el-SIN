@@ -1,5 +1,6 @@
 %{
-   Alnalisis de la variabilidad de las energias renovbales
+   Analisis critico del impacto de la generacion solar y eolica
+   en Mexico sobre estabilidad del Sistema Interconectado Nacional (SIN)
 
 %}
 
@@ -82,25 +83,41 @@ end
 %...................................Limpiando datos......................................
 oldSizeGreen = length(x_green);
 [x_green, x_G13index ] = unique(x_green,'stable');   % Limpiando los datos repetidos del vector x
-y_green = unique_xy_values(x_green,y_green,oldSizeGreen,x_G13index); % Limpiando los datos en el vetor y
+y_green = unique_xy_values(x_green,y_green,oldSizeGreen,x_G13index); % Limpiando los datos en el vector y
 
 oldSizeYellow = length(x_yellow);
 [x_yellow,x_Y13index] = unique(x_yellow,'stable'); % Limpiando los datos repetidos del vector x
-y_yellow = unique_xy_values(x_yellow,y_yellow,oldSizeYellow,x_Y13index); % Limpiando los datos en el vetor y
+y_yellow = unique_xy_values(x_yellow,y_yellow,oldSizeYellow,x_Y13index); % Limpiando los datos en el vector y
 
 oldSizeBlue13 = length(x_blue);
 [x_blue, x_B13index] = unique(x_blue,'stable'); % Limpiando los datos repetidos del vector x
-y_blue = unique_xy_values(x_blue,y_blue,oldSizeBlue13,x_B13index); % Limpiando los datos en el vetor y
+y_blue = unique_xy_values(x_blue,y_blue,oldSizeBlue13,x_B13index); % Limpiando los datos en el vector y
 
 %.................................Graficando las series de tiempo.........................................
 figure(1)
-plot(x_green,y_green,'Color','g', 'LineWidth',1.2);
-title("CURVA PATO DATOS CRUDOS" + dia)
+plot(x_green/100,y_green,'o','MarkerSize',1.1,'MarkerEdgeColor','#2e7d32','MarkerFaceColor','#2e7d32', 'LineWidth',1.2);
+title("CURVA PATO DATOS CRUDOS " + dia) %g1
 grid on
 hold on
 
-plot(x_yellow,y_yellow,'Color','#fbc02d','LineWidth',1.2);
-plot(x_blue,y_blue,'Color','b','LineWidth',1.2);
+
+plot(x_yellow/100,y_yellow,'o','MarkerSize',.5,'MarkerFaceColor','#fbc02d',...
+    'MarkerEdgeColor','#fbc02d','LineWidth',1.2);
+plot(x_blue/100,y_blue,'o','MarkerSize',1.1,'MarkerEdgeColor','#1565c0','MarkerFaceColor','#1565c0',... $b
+    'LineWidth',1.2);
+xlabel("Tiempo (hrs)")
+ylabel("Generacion (MW)")
+
+% Create a legend with 3 entries
+[L,icons] = legend('Gen EO','Gen FV','Gen TER + HIDRO');
+% Find the 'line' objects
+icons = findobj(icons,'Type','line');
+% Find lines that use a marker
+icons = findobj(icons,'Marker','none','-xor');
+% Resize the marker in the legend
+set(icons,'MarkerSize',5);
+
+
 
 
 supLimit = x_blue(end);   % Limite de prueba para curva azul -> 2397.6199
@@ -214,6 +231,16 @@ showInterpol(newXM,y_YInt,y_GInt,y_BInt,2,"CURVA PATO INTERPOLADA "+ dia);
 showInterpol(newXH,y_YIntH,y_GIntH,y_BIntH,3,"CURVA PATO INTERPOLADA "+ dia); 
 
 
+figure(30)
+plot(newXM,y_YInt,"Color","#7f0000","LineWidth",1.2)
+grid on
+hold on 
+plot(newXM,y_BInt,"Color","#0039cb","LineWidth",1.2)
+xlabel("Tiempo(min)")
+ylabel("Generacion (MW)")
+title("Curva superior e inferior " + dia),
+legend("GenCov0","GenCov1")
+
 %...............................Graficas de dispersion.....................
 
 % tot_smooth = smoothdata(y_YInt,'sgolay',10);
@@ -240,8 +267,8 @@ hold on
 [xpr,yPr] = regresionLineal(blue_smooth,green_smooth);
 plot(xpr,yPr,'Color','r','LineWidth',2)
 grid on 
-
-
+xlabel("Generacion Termica")
+ylabel("Generacion Eolica")
 
 
 % 
@@ -293,8 +320,17 @@ showHist(y_BInt,11,"GenConv1 Minutal "+ dia); %12
 showHist(y_YIntH,13,"GenConv0 Horario "+ dia); %14
 showHist(y_BIntH,15,"GenConv1 Horario "+ dia); %16
 
-showHist(dif_min_eo_ter,17,"Diferencias minutales EO-Ter "+ dia); % -> 18 log
-showHist(dif_hor_eo_ter,19,"Diferencias horarias EO-Ter "+ dia);  % -> 20 log
+showHist(dif_min_eo_ter,17,"Diferencias minutales EO-TER "+ dia); % -> 18 log
+showHist(dif_hor_eo_ter,19,"Diferencias horarias EO-TER "+ dia);  % -> 20 log
+
+promedio = mean(dif_hor_FV_eo);
+sigma = std(dif_hor_FV_eo);
+disp("Promedio FV :"+promedio);
+disp("sigma FV = "+sigma);
+promedio2 = mean(dif_hor_eo_ter);
+sigma2 = std(dif_hor_eo_ter);
+disp("Promedio EO :"+promedio2);
+disp("sigma EO = "+sigma2);
 
 %--------------------------------Factor de planta-----------------------
 % Generacion Solar 13 de mayo 2020
@@ -366,10 +402,7 @@ end
 %Funcion encargada de mostrar un histograma
 function showHist(diferencias,num,tit)
 
-    promedio = mean(diferencias);
-    sigma = std(diferencias);
-    disp("Promedio :"+promedio);
-    disp("sigma = "+sigma);
+    
     N_FV = length(diferencias);
     c = ceil(1 + log2(N_FV));
     disp("Numero de clases = "+c);
@@ -385,18 +418,18 @@ function showHist(diferencias,num,tit)
     hist = histogram(diferencias,edges,"Normalization","Probability");
     h = hist.Values;                         % histogram values 
     centers = 0.5* (edges(1:end - 1) + edges(2:end));   % valor central
-
-    bar(centers,h);     
+    
+    bar(centers,h,'FaceColor','#5472d3','EdgeColor','w');     
     title(tit)
     xlabel("MW");
-    ylabel("Frecuencia");   
+    ylabel("Frecuencia relativa");   
     grid on
     
     figure(num+1)
-    semilogy(centers,h,'o','MarkerFaceColor',[0 0.447 0.741]);  %escala semi-Log
+    semilogy(centers,h,'o','MarkerFaceColor',"#002171",'MarkerSize',8);  %escala semi-Log
     title(tit)
     xlabel("MW");
-    ylabel("Frecuencia"); 
+    ylabel("Frecuencia escala logaritmica"); 
     grid on
 end
 
@@ -424,14 +457,19 @@ end
 
 function showInterpol(newX,y_YInt,y_GInt,y_BInt,num,t)
     figure(num)
-    plot(newX,y_YInt,'Color','#fbc02d','LineWidth',1.2);
+    plot(newX,y_YInt,'Color','#fbc02d','LineWidth',1.4);
     title(t)
     grid minor
     hold on
     ax.GridAlpha = 1;
 
-    plot(newX,y_GInt ,'Color','g','LineWidth',1.2);
-    plot(newX,y_BInt,'Color','b','LineWidth',1.2);
+    plot(newX,y_GInt ,'Color','#2e7d32','LineWidth',1.4); %g
+    plot(newX,y_BInt,'Color','#1565c0','LineWidth',1.4); %b
+    xlabel("Tiempo (hrs)")
+    ylabel("Generacion(MW)")
+    % Create a legend with 3 entries
+    legend('Gen FV','Gen EO','Gen TER + HIDRO');
+    
 end
 
 %-------------------------Regresion Lineal---------------
